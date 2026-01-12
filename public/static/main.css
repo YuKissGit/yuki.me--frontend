@@ -1,0 +1,627 @@
+:root {
+  --black: #000;
+  --black-light: rgba(0,0,0,0.08);
+  --black-light-fix:#f3e9f3;
+  --black-middle: #00000080;
+  --cream: rgb(252, 250, 252);
+  --light-pink: #f5e4f1;
+  --pink-middle: hsl(316, 63%, 92%);
+  --pink: #FA99E1;
+  --grey:#696969;
+  --round10: 10px;
+
+  --text-title: monospace, sans-serif;
+  --text-content: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
+  --text-note:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+svg{
+  display: block;
+}
+
+html,body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: var(--text-content);
+  background-color: var(--light-pink);
+}
+header {
+  position: fixed; 
+  top: 0; 
+  left: 0;
+  right: 0;
+  padding: 15px 60px;
+  z-index: 10;/*max num ensure its on the top layer*/
+  /* background-color: var(--light-pink);for scroll down effect, transparency */
+
+  background-color: #f5e4f1f5;
+}
+
+.scroll{
+  /* border-bottom: 1px solid var(--black-light); */
+}
+
+.navbar-right-tab.active{
+  color:var(--pink);
+}
+.navbar-right-tab:hover{
+  color:var(--pink);
+  cursor: pointer;
+}
+
+
+/********** navbar ***********/
+.navbar {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: bold;
+  color:var(--black);
+  font-family: var(--text-title);
+}
+.navbar-left{
+
+}
+
+.navbar-right{
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  color: var(--black-middle);
+}
+.navbar-right-tab{
+  padding: 0px 5px;
+  border-radius: 5px;
+}
+
+/********** main ***********/
+
+main{
+  padding-top: 130px;
+  /* padding-left: 16%;
+  padding-right: 16%; */
+  padding-bottom: 100px; /* should be big than header hight,avoid being covered */
+  min-height: 90%;
+
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+@media(min-width:1440px){
+  main{
+    padding-left: 20%;
+    padding-right: 20%;
+  }
+}
+
+/********** footer ***********/
+footer {
+  background-color: var(--black-light);
+  height: 50px;
+  color: var(--black-middle);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/**************************** projects tab ******************************/
+.tab-content.tab-projects{
+  display: flex;
+  gap: 80px;
+  justify-content: space-between;
+}
+
+.main-left-sidebar {
+  width: 280px;
+  position: fixed;
+  margin-right: 80px;
+}
+
+#sidebar-left-blank {
+    width: 280px; /* align with .main-left-sidebar */
+}
+
+/********** main - left - sidebar - profile ***********/
+.sidebar-image {
+    margin-bottom: -80px;
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+}
+
+.sidebar-content{
+  background-color: var(--black);
+  padding: 90px 20px 20px 20px;
+  border: 2px solid var(--cream);
+  box-shadow: 6px 6px 0 var(--black); 
+  border-radius: var(--round10);
+}
+
+.sidebar-content-text{
+  padding: 5px;
+  background-color: var(--pink-middle);
+  border-radius: var(--round10);
+  border: 2px solid var(--cream);
+  box-shadow: 5px 5px 0 var(--pink); 
+  word-wrap: break-word; /* change line */
+  color:var(--black);
+  font-family: var(--text-content);
+}
+
+.sidebar-link-icons {
+  display: flex;
+  justify-content: space-between;
+  padding: 0px 50px;
+  margin: 15px 0px;/*if add more icons , change here*/
+}
+.sidebar-link-icon{
+  fill: var(--black);
+}
+.sidebar-link-icon:hover{
+  fill: var(--pink);
+  cursor: pointer;
+}
+
+/********** main - right - projects ***********/
+.main-right-projects{
+  border-radius: var(--round10);
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  padding: 30px;
+  /* background-color: var(--black-light); */
+}
+
+.project { 
+  width: 500px;
+  border-radius: var(--round10); 
+  background-color: var(--black-light);
+  border: 1px solid var(--black-light);
+
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+} 
+.project:hover{
+  cursor: pointer;
+  /* background-color: rgba(0,0,0,0.15);
+  outline: 1px solid var(--black-middle); */
+
+  transform: scale(1.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.project-left-images{
+  width: 500px;
+  height: 281px;
+  object-fit: cover;
+  border-radius: 10px 10px 0px 0px;
+}
+
+.project-left-text{
+  padding: 10px 20px;
+}
+
+.text-title {
+  font-weight: 500;
+}
+
+.text-icons{
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 15px;
+}
+.text-icons-links{
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+.text-icons-links:hover{
+  fill: var(--pink);
+}
+.text-icons-labels{
+  display: flex;
+  align-items: center;
+}
+.text-icons-label{
+  border-radius: 5px;
+  background-color: var(--black-light-fix);
+  padding: 0px 7px;
+  margin: 0px 5px;
+  font-size: 0.9em;
+}
+
+/**************************** Blogs tab ******************************/
+.tab-content.tab-blogs{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-left: 10%;
+  padding-right: 10%;
+}
+
+
+.tab-content-blogs{
+  width: 100%;
+  border-radius: var(--round10);
+  padding: 5px 50px 50px 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.blogs-blog{
+  background-color: var(--black-light);
+  border-radius: var(--round10);
+  padding: 20px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.blogs-blog:hover{
+  /* background-color: rgba(0,0,0,0.2); */
+  
+  cursor: pointer;
+  transform: scale(1.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* 1. 给正文内容的容器添加样式 */
+.blog-content-wrapper {
+  /* 核心代码：限制显示行数 */
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* 这里设置 1 就是只显示一行，你可以改成 3 显示三行 */
+  -webkit-box-orient: vertical;
+  overflow: hidden; 
+  text-overflow: ellipsis; /* 加上省略号 ... */
+  
+  /*为了美观，稍微加上一点过渡动画（可选）*/
+  /* transition: max-height 0.3s ease;
+  cursor: pointer; 鼠标放上去变小手，提示可点击 */
+}
+
+/* 2. 当添加了 'expanded' 这个类名时的样式 */
+.blog-content-wrapper.expanded {
+  /* 取消行数限制，显示全部内容 */
+  -webkit-line-clamp: unset; 
+  display: block; 
+  overflow: visible;
+}
+
+
+.blogs-blog-title{
+  font-size: 1.1em;
+  font-weight: 600;
+}
+
+.blogs-blog-date{
+  color:var(--grey);
+}
+
+.blogs-blog-article{
+  overflow: hidden;
+  padding: 10px 0px;
+  /* height: 25px; */
+}
+
+/********blog search**********/
+.tab-content-blogs-search{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0px 15px 0px;
+}
+
+/***** blog search-manual *******/
+.blogs-search-manual{
+  display: flex;
+  justify-content: center;
+  background-color:white;
+  border-radius: var(--round10);
+  padding: 0px 5px;
+  margin-bottom: 60px;
+  outline: 1px solid var(--black-middle);
+}
+.blogs-search-manual:focus-within{
+   outline: 2px solid var(--black);
+}
+.blogs-search-manual-input{
+  border: none;
+  height:30px;
+  border-radius: var(--round10);
+  width: 300px;
+  font-size: 15px;
+  padding-left: 10px;
+}
+input:focus{
+  outline: none;
+}
+
+/***** blog search-auto *******/
+.blogs-search-auto{
+  display: flex;
+  border-radius: var(--round10);
+  color: var(--grey);
+  justify-content: space-between;
+  gap: 160px;
+}
+
+.blogs-search-auto-newer, .blogs-search-auto-older{
+  padding: 2px 9px; /* 9px for "newer posts","older posts" click button effect*/
+  border-radius: var(--round10);
+}
+
+.blogs-search-auto-newer:hover, .blogs-search-auto-older:hover{
+  background-color:var(--black-light);
+  cursor: pointer;
+  color:var(--black);
+  outline: 1px solid var(--black);
+}
+
+.blogs-search-auto-middle{
+
+}
+
+.blogs-search-auto-middle-leftNum{
+
+}
+.blogs-search-auto-middle-rightNum{
+
+}
+.blogs-search-auto-older{
+
+}
+
+/**************************** sayHi tab ******************************/
+#sayhi {
+  position: relative; /* snow needs a reference */
+  overflow: hidden;   /* optional, keeps snow inside */
+  padding: 0px 40px;
+}
+.tab-content.tab-sayhi{
+
+}
+
+/****** nav *******************/
+.sayhi-nav{
+  padding: 0px 220px 10px 220px;
+}
+/****** nav images *****/
+.sayhi-nav-images{
+  display:flex;
+  justify-content: space-between;
+  padding: 0px 10px;
+}
+
+.sayhi-nav-images-girl{
+  margin-bottom: -8px;
+  height: 90px;
+  z-index: 1;
+}
+.sayhi-nav-snow{
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  gap:5px;
+}
+.sayhi-nav-snow-icon-frame{
+  justify-items: center;
+  position: relative;
+}
+
+#sayhi-nav-snow-icon{
+  width: 45px;
+}
+#sayhi-nav-snow-icon:hover{
+  fill:var(--pink);
+  cursor: pointer;
+}
+.sayhi-nav-snow-icon-frame::after{
+  content: "Do you like yuki?";
+  position: absolute;
+  right: 180%;
+  bottom:  1%;
+
+  padding: 0px 8px;
+  border-radius: 5px;
+  font-size: 20px;
+  white-space: nowrap;
+  font-family: var(--text-note);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sayhi-nav-snow-icon-frame:hover::after{
+  opacity: 1;
+}
+
+.sayhi-nav-snow-num{
+  align-self: center;
+  color:var(--black-middle);
+  background-color: var(--pink);
+  padding: 1px 5px;
+  border-radius: 5px;
+}
+/******* comment *******/
+#sayhi-nav-comment{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.comment-box{
+  padding: 15px;
+  width: 100%;
+  height: 18px;
+  border-radius: var(--round10);
+  margin-bottom: 10px;
+}
+
+.comment-buttons{
+  justify-content: space-between;
+  align-items: center;
+  display: none; 
+  padding: 0px 10px;
+}
+
+.comment-button-required{
+  color: red;
+  display: flex;
+  gap: 5px;
+}
+.comment-button-required-input{
+  border-radius: 5px;
+  border: 1px solid var(--grey);
+  width: 100%;
+}
+
+/* .comment-button-input:focus.comment-box:focus-within{
+  outline: 2px solid var(--black);
+} */
+#sayhi-nav-comment.is-active .comment-box {
+  height: 100px;
+}
+#sayhi-nav-comment.is-active .comment-buttons {
+  display: block;
+}
+
+
+
+/* .sayhi-nav-comment-box:focus-within{
+  outline: 2px solid var(--black);
+  height: 100px;
+} */
+
+/* #sayhi-nav-comment:focus-within{
+  height: 200px;
+}
+.sayhi-nav-comment-box:focus{
+  outline: 2px solid var(--black);
+  height: 100px;
+} */
+/* #sayhi-nav-comment:focus-within .comment-buttons{
+  display: block;
+} */
+
+
+
+
+
+
+.comment-submit{
+  display: flex;
+  justify-self: end;
+  background-color: var(--pink);
+  margin: 10px 0px;
+  border-radius: 5px;
+  padding: 2px 5px;
+  color:var(--black-middle);
+  border: 1px solid var(--grey);
+}
+
+.comment-submit:hover{
+  color:var(--black);
+  cursor: pointer;
+  border: 1px solid var(--black);
+}
+
+/****** snow ******/
+
+.snow {
+  position: absolute;
+  top: -40px;
+
+  width: 24px;
+  height: 24px;
+
+  background-image: url('./svg/snow2.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  animation: fall linear infinite, spin 4s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes fall {
+  to {transform: translateY(100vh) translateX(30vh) rotate(180deg);}
+}
+
+/******** comments *********/
+#sayhi-comments{
+  height: 80vh;
+  border-radius: var(--round10);
+  background-color: var(--black-light);
+  margin: 10px 0px;
+  padding: 30px 60px;
+}
+
+.sayhi-comments-oneComments{
+  margin: 15px 0px;
+}
+.sayhi-comments-oneComments-bottom{
+  margin: 20px 0px 30px 0px;
+  border-bottom: 2px solid var(--black-light);
+
+}
+.oneComments-bar{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;  
+
+}
+
+.oneComments-bar-left{
+  align-items: center;
+  display: flex;
+  justify-content: left;
+}
+
+.oneComments-bar-userIcon{
+  border-radius: 10px;
+}
+
+.oneComments-bar-userName{
+  margin: 0px 10px;
+}
+
+.oneComments-bar-date{
+  color: var(--grey);
+  font-size: 0.8em;
+
+}
+
+.oneComments-bar-reply{
+  display: flex;
+  background-color: var(--pink);
+  padding: 0px 5px;
+  border-radius: 5px;
+  color:var(--black-middle);
+  outline:1px solid var(--black-middle);
+}
+.oneComments-bar-reply:hover{
+  outline:1px solid var(--black);
+  color:var(--black);
+}
+
+.oneComments-bar-reply-text{
+
+}
+
+.oneComments-bar-reply-num{
+
+}
+
+.sayhi-comments-oneComments-content{
+  margin: 0px 40px;
+
+}
+
+.sayhi-comments-oneComments-otherComment{
+  margin-left: 40px;
+}
+
+
+
