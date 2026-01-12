@@ -334,7 +334,7 @@ commentForm.addEventListener('submit', async (e) => {
 
   try {
     // ⚠️ 注意这里填你后端真实 URL
-    const res = await fetch('http://127.0.0.1:3000/comments', {
+    const res = await fetch('https://yuki-me-backend.onrender.com/comments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -369,7 +369,7 @@ commentForm.addEventListener('submit', async (e) => {
 // 加载评论列表
 async function loadComments() {
   try {
-    const res = await fetch('http://127.0.0.1:3000/comments');
+    const res = await fetch('https://yuki-me-backend.onrender.com/comments');
     if(!res.ok) throw new Error('Failed to load comments');
     const comments = await res.json();
 
