@@ -9,7 +9,7 @@
         "image":"./public/static/image/project-test.png"
     },
     {
-        "id":1,
+        "id":2,
         "title":"B-test",
         "labels":["JS","C","C++"],
         "youtube":"https://www.youtube.com/watch?v=9L60q0fQHu8",
@@ -18,7 +18,7 @@
         "image":"./public/static/image/project-test.png"
     },
     {
-        "id":1,
+        "id":3,
         "title":"C-test",
         "labels":["JS","C","C++"],
         "youtube":"https://www.youtube.com/watch?v=9L60q0fQHu8",
