@@ -236,32 +236,41 @@ commentForm.addEventListener('submit', async (e) => {
 
 //commentsArea-----------------------------------
 commentsArea.addEventListener('click', e => {//keep only one reply box open, so listen whole comments area
-  
-// "Show more replies" click event--------------
-if (e.target.closest('.toggle-replies-btn')) {
-  const btn = e.target.closest('.toggle-replies-btn');
+    
+  // "Show more replies" click event--------------
+  if (e.target.closest('.replies-showmore')) {
+    const btn = e.target.closest('.replies-showmore');
 
-  //in commentsArea there are multiple comments and show more, find the toggle-replies of current show more btn
-  const toggleWrapper = btn.closest('.toggle-replies');
+    //in commentsArea there are multiple comments and show more, find the toggle-replies of current show more btn
+    const toggleWrapper = btn.closest('.toggle-replies');
 
-  //find hidden div at same level
-  const hiddenDiv = toggleWrapper.previousElementSibling;
+    //find hidden div at same level
+    const hiddenDiv = toggleWrapper.previousElementSibling;
 
-  if (!hiddenDiv || !hiddenDiv.classList.contains('hidden-replies-container')) {
-    return;
+    if (!hiddenDiv || !hiddenDiv.classList.contains('hidden-replies-container')) {
+      return;
+    }
+
+    const isHidden = hiddenDiv.style.display === 'none';
+
+    hiddenDiv.style.display = isHidden ? 'block' : 'none';
+    btn.textContent = isHidden ? '- Hide replies -' : '- Show more replies -';
   }
 
-  const isHidden = hiddenDiv.style.display === 'none';
-
-  hiddenDiv.style.display = isHidden ? 'block' : 'none';
-  btn.textContent = isHidden ? '- Hide replies -' : '- Show more replies -';
-}
-
   //reply event----------------------------------
+  
+  /* 
   if (e.target.classList.contains('generate-comment-reply')) {
-    const parentId = e.target.dataset.id;
-    const parentName = e.target.dataset.name; // get reply-to name
-    const parentDiv = e.target.closest('.generate-comment'); //parent may have parent, so closet parent
+      const parentId = e.target.dataset.id;
+      const parentName = e.target.dataset.name; // get reply-to name
+      const parentDiv = e.target.closest('.generate-comment'); //parent may have parent, so closet parent
+  */
+
+  const replyBtn = e.target.closest('.generate-comment-reply');
+  if (replyBtn) {
+    const parentId = replyBtn.dataset.id; // use replyBtn not e.target
+    const parentName = replyBtn.dataset.name;
+    const parentDiv = replyBtn.closest('.generate-comment');
 
     //keep only one reply form open
     if (activeReplyForm) {
@@ -287,7 +296,8 @@ if (e.target.closest('.toggle-replies-btn')) {
       </form>
     `;
 
-    e.target.insertAdjacentHTML('afterend', replyHtml);
+    // replyBtn.insertAdjacentHTML('afterend', replyHtml);
+    parentDiv.insertAdjacentHTML('beforeend', replyHtml);
     activeReplyForm = parentDiv.querySelector('.reply-form');
     
     //pass parentName to merge to reply content
@@ -464,7 +474,7 @@ function buildRootStructure(root) {
     </div>
 
     <div class="toggle-replies">
-      <button class="toggle-replies-btn">
+      <button class="replies-showmore">
         - Show more replies -
       </button>
     </div>
@@ -484,7 +494,7 @@ function renderFullTree(list, level) {
 // build single comment itself HTML without children
 function createSingleCommentHTML(c, level) {
   // Flat：Level 0 no indent，Level > 0  20px indent each level
-  const marginLeft = level * 20; 
+  const marginLeft = level * 30; 
 
   return `
     <div class="generate-comment" style="margin-left:${marginLeft}px; border-left: ${level > 0 ? '1px solid #eee' : 'none'};">
@@ -496,9 +506,9 @@ function createSingleCommentHTML(c, level) {
           </span>
         </div>
 
-        <button class="generate-comment-reply" data-id="${c._id}" data-name="${c.name}">
-          Reply
-        </button>
+        <div class="generate-comment-reply" data-id="${c._id}" data-name="${c.name}">
+          <svg width=30 height=20 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M6.4 3.80353C7.55322 2.26658 10 3.08182 10 5.00302V8.00928C14.6772 7.86093 17.7771 9.50672 19.7796 11.7657C21.8614 14.1142 22.6633 17.0184 22.9781 18.9028C23.116 19.7283 22.5806 20.3237 22.0149 20.5275C21.4711 20.7234 20.7467 20.6283 20.2749 20.0531C18.6945 18.1261 15.5 15.4884 10 15.4884V18.997C10 20.9182 7.55321 21.7334 6.4 20.1965L1.6 13.7992C0.800001 12.733 0.800001 11.267 1.6 10.2008L6.4 3.80353ZM8 5.00302L3.2 11.4003C2.93333 11.7557 2.93333 12.2443 3.2 12.5997L8 18.997V14.5C8 13.9477 8.44772 13.5 9 13.5H10C17 13.5 20.6009 17.4621 20.6009 17.4621C20.1828 16.0361 19.4749 14.4371 18.2829 13.0924C16.7183 11.3273 14.5 10 10 10H9C8.44772 10 8 9.55228 8 9V5.00302Z" ></path> </g></svg>
+        </div>
       </div>
       <div class="generate-comment-content style="margin: 5px 0;">${c.content}</div>
 
@@ -526,7 +536,7 @@ function updatePaginationUI() {
 
   // 2. "Newer" if first page, can't click
   if (currentPage <= 1) {
-    pageNewerBtn.style.opacity = '0.5';
+    pageNewerBtn.style.opacity = '0.2';
     pageNewerBtn.style.pointerEvents = 'none'; //click forbidden
   } else {
     pageNewerBtn.style.opacity = '1';
@@ -535,7 +545,7 @@ function updatePaginationUI() {
 
   // 3. "Oldest"
   if (currentPage >= totalPages) {
-    pageOlderBtn.style.opacity = '0.5';
+    pageOlderBtn.style.opacity = '0.2';
     pageOlderBtn.style.pointerEvents = 'none';
   } else {
     pageOlderBtn.style.opacity = '1';
