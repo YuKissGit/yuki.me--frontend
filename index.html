@@ -85,8 +85,8 @@
                 *<input class="comment-button-required-input" type="email" name="email" placeholder="Your email" required>
               </div>
               <button type="submit" class="comment-submit">comment</button>
-                <!-- 👇 页面内提示 -->
-              <div class="comment-message" aria-live="polite"></div>
+
+              <div class="comment-message" aria-live="polite"></div> <!--for Screen Reader-->
               <input type="text" name="website" style="display:none"> <!-- honeypot -->
             </div>  
           </form>
@@ -95,6 +95,18 @@
 
         <!---------------- comments ------------------->
         <div id="sayhi-comments"></div>
+        
+        <div class="page">
+          <div class="page-newer">Newer</div>
+          <div class="page-pagination">
+            <div class="page-pagination-current-page"></div>
+            /
+            <div class="page-pagination-all-page"></div>
+          </div>
+          <div class="page-older">Older</div>
+        </div>
+
+
       </div>
       
     </div>

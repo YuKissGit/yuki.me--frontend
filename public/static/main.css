@@ -551,7 +551,7 @@ input:focus{
 
 /******** comments *********/
 #sayhi-comments{
-  height: 80vh;
+  /* height: 80vh; */
   border-radius: var(--round10);
   background-color: var(--black-light);
   margin: 10px 0px;
@@ -625,3 +625,111 @@ input:focus{
 
 
 
+
+
+.page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 60px;
+  margin-top: 20px;
+}
+
+.page-newer, .page-older {
+  cursor: pointer;
+  user-select: none; /* debounce */
+  border: 1px solid var(--black-middle);
+  padding: 0px 8px;
+  border-radius: 5px;
+}
+
+.page-pagination {
+  display: flex;
+  gap: 5px;
+}
+
+
+.reply-form{
+  padding-left: 10%;
+  padding-right: 10%;
+}
+.reply-form-box{
+
+
+}
+.reply-form-required{
+
+}
+.reply-form-required-input{
+
+}
+
+.reply-form-buttons{
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  padding: 0px 20px;
+}
+.reply-form-buttons-cancel.comment-submit{
+  background-color: var(--black-light);
+}
+.reply-form-buttons-submit{
+
+}
+
+.hidden-replies-container{
+  display: none;
+
+}
+.toggle-replies{
+  display: flex;
+  justify-content: center;
+}
+.toggle-replies-btn{
+  all: unset;
+  cursor: pointer;
+  color: var(--black-middle);
+  font-size: 0.8em;
+  padding: 5px 50px; /*for click area*/
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--black-light);
+}
+
+.generate-comment{
+  margin-bottom: 20px;
+}
+
+.generate-comment-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.generate-comment-header-left{
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.generate-comment-name{
+  font-weight: 500;
+}
+.generate-comment-time{
+  color: var(--black-middle);
+  font-size: 0.8em;
+
+}
+.generate-comment-reply{
+  all: unset;
+  cursor: pointer;
+
+  font-size: 0.8em;
+  background-color: var(--pink);
+  border-radius: 5px;
+  padding: 2px 5px;
+  color:var(--black-middle);
+  border: 1px solid var(--grey);
+}
+.generate-comment-content{
+  /* margin: 5px 0px; ?????????*/
+  padding-left: 40px;
+  color: #000000a6;
+}

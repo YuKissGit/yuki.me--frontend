@@ -1,5 +1,5 @@
 
-//navbar---click tab, change tab content of main-------------------
+//===================navbar---click tab, change tab content of main==========
 const tabs = document.querySelectorAll(".navbar-right-tab");
 const contents = document.querySelectorAll(".main-content");
 tabs.forEach(tab => {
@@ -19,7 +19,7 @@ tabs.forEach(tab => {
 });
 
 
-//sayhi tab--- snow------------------------------------------------
+//=======================sayhi tab--- snow============================
 const btn = document.getElementById('sayhi-nav-snow-icon');
 const snowArea = document.getElementById('sayhi');
 
@@ -60,7 +60,7 @@ function createSnow() {
 }
 
 
-// blog-----auto fetch from blogs.json--------------------------------
+// ==================blog-----auto fetch from blogs.json=====================
 const container = document.querySelector('.tab-content-blogs'); 
 
 fetch('./data/blogs.json')
@@ -124,7 +124,7 @@ fetch('./data/blogs.json')
   .catch(err => console.error("Error loading blogs:", err));
 
 
-  //projects tab------load projects------------------------------------
+  //=====================projects tab------load projects==================
   //1. select parent area
   const pContainer = document.querySelector('.main-right-projects');
   //2-1. fetch data
@@ -168,298 +168,382 @@ fetch('./data/blogs.json')
 
     });
 
-//sayhi tab--------load comments-------------------------------------
-
-loadComments();
+//=======================sayhi tab================================
 
 const commentForm = document.getElementById('sayhi-nav-comment');
-const textarea = commentForm.querySelector('.comment-box');
-const commentsDiv = document.getElementById('sayhi-comments');
+const rootCommentBox = commentForm.querySelector('.comment-box');
+const commentsArea = document.getElementById('sayhi-comments');
+let activeReplyForm = null; 
 
-// focus effect - comment box--------------
-textarea.addEventListener('focus', () => {
+//static root comment box--configure------------------
+  //root comment-focus effect
+rootCommentBox.addEventListener('focus', () => {
   commentForm.classList.add('is-active');
 });
 
 document.addEventListener('click', (e) => {
-  if (!commentForm.contains(e.target)) { //only when click out of 'sayhi-nav-comment'(include name+email) , remove effect
+  if (!commentForm.contains(e.target)) { 
     commentForm.classList.remove('is-active');
   }
 });
 
-// //------------------
-// let replyingTo = null;
-
-// commentsDiv.addEventListener('click', e => {
-//   if (e.target.classList.contains('reply-btn')) {
-//     const commentId = e.target.dataset.id;
-
-//     // 获取输入内容
-//     const content = prompt("Enter your reply:");
-
-//     if (!content) return;
-
-//     // 发送请求
-//     fetch('http://127.0.0.1:3000/comments', {
-//       method: 'POST',
-//       headers: { 'Content-Type': 'application/json' },
-//       body: JSON.stringify({
-//         name: 'Anonymous', // 或者让用户输入
-//         email: 'anon@example.com',
-//         content,
-//         parentId: commentId
-//       })
-//     }).then(res => res.json())
-//       .then(() => loadComments());
-//   }
-// });
-
-
-// cancelReplyBtn.addEventListener('click', () => {
-//   replyingTo = null;
-
-//   replyHint.hidden = true;
-//   cancelReplyBtn.hidden = true;
-
-//   textarea.value = '';
-// });
-
-
-
-//submit event-------------------------
+  //root comment-submit
 commentForm.addEventListener('submit', async (e) => {
-  //1. prevent default -- manually configure submit event
   e.preventDefault();
-  //2. handle submit button
   const submitBtn = commentForm.querySelector('.comment-submit');
+  
+  // Debounce - Prevent duplicate submission
+  if(submitBtn.disabled) return;
   submitBtn.disabled = true;
   submitBtn.textContent = 'Sending...';
-  //3. get form data
+
   const formData = new FormData(commentForm);
   const data = Object.fromEntries(formData.entries());
 
-  //4. validate data first ----honeypot
+  // Honeypot validation
   if (data.website) {
     alert('Spam detected.');
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'comment';
+    resetBtn(submitBtn, 'Comment');
     return;
   }
-  //5. submit to backend ,and load lasted comments
+
   try {
-    // const res = await fetch('https://yuki-me-backend.onrender.com/comments', {
-    const res = await fetch('http://127.0.0.1:3000/comments', {
-      
-    method: 'POST',
+    const res = await fetch('http://127.0.0.1:3000/comments', { 
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        //_id:
         name: data.name,
         email: data.email,
         content: data.content,
-        parentId: replyingTo
+        parentId: null //root comment has no parentId
       })
     });
 
-    if (!res.ok)throw new Error('Request failed');
+    if (!res.ok) throw new Error('Comment request failed');
 
-    //if comment successfully, remove the content first and re-load the data 
-    textarea.value = ''; 
-    replyingTo = null;
-    replyHint.hidden = true;
-    cancelReplyBtn.hidden = true;
-    // alert('Comment sent successfully!');//for test
-
+    rootCommentBox.value = ''; 
+    commentForm.classList.remove('is-active');
+    // textarea.blur();//Removes keyboard focus from the input field
     await loadComments();
 
-    //once comment successfully, fold the comment box
-    commentForm.classList.remove('is-active');
-    textarea.blur();
-
-  } catch (err) {
-    alert('Failed to send comment. Please try again.');
+  } catch (err) {//catch this Error('Comment request failed');
+    alert('Failed to send comment.'); 
     console.error(err);
   } finally {
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'comment';
+    resetBtn(submitBtn, 'Comment');
   }
 });
 
-// loadComments define-----------------
-async function loadComments() {
+//commentsArea-----------------------------------
+commentsArea.addEventListener('click', e => {//keep only one reply box open, so listen whole comments area
+  
+// "Show more replies" click event--------------
+if (e.target.closest('.toggle-replies-btn')) {
+  const btn = e.target.closest('.toggle-replies-btn');
+
+  //in commentsArea there are multiple comments and show more, find the toggle-replies of current show more btn
+  const toggleWrapper = btn.closest('.toggle-replies');
+
+  //find hidden div at same level
+  const hiddenDiv = toggleWrapper.previousElementSibling;
+
+  if (!hiddenDiv || !hiddenDiv.classList.contains('hidden-replies-container')) {
+    return;
+  }
+
+  const isHidden = hiddenDiv.style.display === 'none';
+
+  hiddenDiv.style.display = isHidden ? 'block' : 'none';
+  btn.textContent = isHidden ? '- Hide replies -' : '- Show more replies -';
+}
+
+  //reply event----------------------------------
+  if (e.target.classList.contains('generate-comment-reply')) {
+    const parentId = e.target.dataset.id;
+    const parentName = e.target.dataset.name; // get reply-to name
+    const parentDiv = e.target.closest('.generate-comment'); //parent may have parent, so closet parent
+
+    //keep only one reply form open
+    if (activeReplyForm) {
+      activeReplyForm.remove();
+    }
+
+    const replyHtml = `
+      <form class="reply-form">
+
+        <textarea class="comment-box" name="content" 
+                  placeholder="replying to @${parentName} " 
+                  required ></textarea>
+
+        <div class="comment-button-required">
+          *<input class="comment-button-required-input" type="text" name="name" placeholder="Your name" required>
+          *<input class="comment-button-required-input" type="email" name="email" placeholder="Your email" required>
+        </div>
+
+        <div class="reply-form-buttons">
+          <button class="reply-form-buttons-cancel comment-submit" type="button">Cancel</button>
+          <button class="reply-form-buttons-submit comment-submit" type="submit">Reply</button>
+        </div>
+      </form>
+    `;
+
+    e.target.insertAdjacentHTML('afterend', replyHtml);
+    activeReplyForm = parentDiv.querySelector('.reply-form');
+    
+    //pass parentName to merge to reply content
+    handleReplySubmit(activeReplyForm, parentId, parentName);
+  }
+
+  // if cancel clicked
+  if (e.target.classList.contains('reply-form-buttons-cancel')) {
+    if (activeReplyForm) {
+      activeReplyForm.remove();
+      activeReplyForm = null;//to keep only one reply form display
+    }
+  }
+
+});
+
+//Paginated Comment Loading--------------------------
+//default to 1
+let currentPage = 1;
+let totalPages = 1;
+
+const pageNewerBtn = document.querySelector('.page-newer');
+const pageOlderBtn = document.querySelector('.page-older');
+const currentPageSpan = document.querySelector('.page-pagination-current-page');
+const totalPageSpan = document.querySelector('.page-pagination-all-page');
+
+async function loadComments(page = 1) {
   try {
-    // const res = await fetch('https://yuki-me-backend.onrender.com/comments');
-    const res = await fetch('http://127.0.0.1:3000/comments');
+    activeReplyForm = null; //reset reply form state
 
-    if(!res.ok) throw new Error('Failed to load comments');
-    const comments = await res.json();
+    //limit 15 comments(root) per page
+    const res = await fetch(`http://127.0.0.1:3000/comments?page=${page}&limit=15`);
 
-    commentsDiv.innerHTML = renderComments(comments);
-  } catch(err) {
+    if (!res.ok) throw new Error('Failed to load comments');
+    
+    // { comments: [], totalPages: 10 }
+    const data = await res.json(); 
+
+    const commentsList = data.comments; //Array.isArray(data) ? data : data.comments;
+    const serverTotalPages = data.totalPages || 1; 
+    commentsArea.innerHTML = renderComments(commentsList);
+
+    currentPage = page;
+    totalPages = serverTotalPages;
+    
+    updatePaginationUI();
+
+  } catch (err) {
     console.error(err);
-    commentsDiv.innerHTML = '<p>Failed to load comments.</p>';
+    commentsArea.innerHTML = '<p>Failed to load comments.</p>';
   }
 }
-//-------------
-function renderComments(list, level = 0) {
-  return list.map(c => `
-    <div class="comment" style="margin-left:${level * 20}px">
-      <strong>${c.name}</strong>
-      <span class="comment-time">
-        (${new Date(c.createdAt).toLocaleString()})
-      </span>
-      <p>${c.content}</p>
 
-      <button class="reply-btn" data-id="${c._id}" data-name="${c.name}">
-        Reply
-      </button>
+//Pagination - change page----------------------
+pageNewerBtn.addEventListener('click', () => {
+  if (currentPage > 1) {
+    loadComments(currentPage - 1);
+    scrollToCommentTop();
+  }
+});
 
-      ${c.children && c.children.length
-        ? renderComments(c.children, level + 1)
-        : ''}
-    </div>
-  `).join('');
+pageOlderBtn.addEventListener('click', () => {
+  if (currentPage < totalPages) {
+    loadComments(currentPage + 1);
+    scrollToCommentTop();
+  }
+});
+
+//last step----------------------------------------
+// wait for all events configure successfully
+loadComments(1);
+
+
+
+
+
+//========================Helper functions===================
+
+//reply submit---------------------------------------
+function handleReplySubmit(form, parentId, parentName) {
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = form.querySelector('.reply-form-buttons-submit');
+    
+    const rawContent = form.querySelector('textarea').value;
+    const finalContent = `@${parentName} ${rawContent}`;
+    
+      // Debounce - Prevent duplicate submission
+    if(submitBtn.disabled) return;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending...';
+
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+
+    // Honeypot validation
+    if (data.website) {
+      alert('Spam detected.');
+      resetBtn(submitBtn, 'Comment');
+      return;
+    }
+
+    try {
+      const res = await fetch('http://127.0.0.1:3000/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: data.name, 
+          email: data.email,
+          content: finalContent, //parentName added
+          parentId: parentId
+        })
+      });
+
+      if (!res.ok) throw new Error('Reply failed');
+
+      form.remove();
+      activeReplyForm = null;
+      await loadComments();
+
+    } catch (err) {
+      alert('Failed to reply.');
+      console.error(err);
+    }finally {
+    resetBtn(submitBtn, 'Reply');
+    }
+
+  });
+
+} 
+
+
+// Render Logic--------------------------------
+// entry point
+function renderComments(list) {
+  if (!list || list.length === 0) return '';
+  return list.map(root => buildRootStructure(root)).join('');
 }
-// //verso==============================
-//=================================
-// const commentForm = document.getElementById('sayhi-nav-comment');
-// const textarea = commentForm.querySelector('.comment-box');
-// const commentsDiv = document.getElementById('sayhi-comments');
-// const nameInput = commentForm.querySelector('input[name="name"]');
-// const emailInput = commentForm.querySelector('input[name="email"]');
+//build single root comment with hidden
+function buildRootStructure(root) {
+  const rootHTML = createSingleCommentHTML(root, 0); 
+  
+  //if no children comment, return rootHtml
+  if (!root.children || root.children.length === 0) {
+    return rootHTML;
+  }
 
-// let userName = localStorage.getItem('userName') || '';
-// let userEmail = localStorage.getItem('userEmail') || '';
+  //if has children ,get all children(first used to display)
+  const firstChild = root.children[0];
+  const otherSiblings = root.children.slice(1);
 
-// /* ---------------- 公用提交函数 ---------------- */
-// async function submitComment(data, onSuccess) {
-//   const { name, email, content, parentId, website } = data;
+  // 1. 
+  const firstChildHTML = createSingleCommentHTML(firstChild, 1);
 
-//   // 前端验证
-//   if (website) { alert('Spam detected.'); return; }
-//   if (!name || !email || !content) { alert('Missing fields'); return; }
-//   if (name.length > 50 || email.length > 50 || content.length > 500) {
-//     alert('Field too long'); return;
-//   }
+  // 2. Hidden Box
+  // Part A: Level 2+ of First Child
+  // Part B: all other Siblings
+  
+  const partA_Html = renderFullTree(firstChild.children, 2); // A
+  const partB_Html = renderFullTree(otherSiblings, 1);       //B, C...
 
-//   try {
-//     const res = await fetch('http://127.0.0.1:3000/comments', {
-//       method: 'POST',
-//       headers: { 'Content-Type': 'application/json' },
-//       body: JSON.stringify(data)
-//     });
-//     const result = await res.json();
-//     if (!res.ok || !result.success) throw new Error(result.message || 'Failed to send comment');
+  // if Part A,B is empty, doesnt need "show more" button
+  if (!partA_Html && !partB_Html) {
+    return rootHTML + firstChildHTML;
+  }
 
-//     // 保存用户信息
-//     userName = name;
-//     userEmail = email;
-//     localStorage.setItem('userName', name);
-//     localStorage.setItem('userEmail', email);
+  return `
+    ${rootHTML}
+    ${firstChildHTML}
+    
+    <div class="hidden-replies-container">
+      ${partA_Html}
+      ${partB_Html}
+    </div>
 
-//     if (onSuccess) onSuccess();
-//     await loadComments();
-//   } catch (err) {
-//     console.error(err);
-//     alert(err.message || 'Failed to send comment.');
-//   }
-// }
+    <div class="toggle-replies">
+      <button class="toggle-replies-btn">
+        - Show more replies -
+      </button>
+    </div>
+  `;
+}
 
-// /* ---------------- reply box ---------------- */
-// function createReplyBox(commentId, commentName) {
-//   if (document.getElementById('reply-box-' + commentId)) return null;
+// recursively fetch Hidden Box with all comments
+function renderFullTree(list, level) {
+  if (!list || list.length === 0) return '';
+  return list.map(c => {
+    const currentHTML = createSingleCommentHTML(c, level);
+    const childrenHTML = renderFullTree(c.children, level + 1);
+    return currentHTML + childrenHTML;
+  }).join('');
+}
 
-//   const box = document.createElement('div');
-//   box.className = 'reply-box';
-//   box.id = 'reply-box-' + commentId;
-//   box.innerHTML = `
-//     <div class="reply-hint">Replying to ${commentName}</div>
-//     <input type="text" placeholder="Your name" value="${userName}">
-//     <input type="email" placeholder="Your email" value="${userEmail}">
-//     <textarea rows="2" placeholder="Write a reply..."></textarea>
-//     <div class="reply-btn-container">
-//       <button class="reply-submit">Reply</button>
-//       <button class="reply-cancel">Cancel</button>
-//     </div>
-//   `;
-//   const parentComment = document.querySelector(`#comment-${commentId}`);
-//   parentComment.appendChild(box);
+// build single comment itself HTML without children
+function createSingleCommentHTML(c, level) {
+  // Flat：Level 0 no indent，Level > 0  20px indent each level
+  const marginLeft = level * 20; 
 
-//   const nameField = box.querySelector('input[type=text]');
-//   const emailField = box.querySelector('input[type=email]');
-//   const inputField = box.querySelector('textarea');
-//   const submitBtn = box.querySelector('.reply-submit');
-//   const cancelBtn = box.querySelector('.reply-cancel');
+  return `
+    <div class="generate-comment" style="margin-left:${marginLeft}px; border-left: ${level > 0 ? '1px solid #eee' : 'none'};">
+      <div class="generate-comment-header">
+        <div class="generate-comment-header-left">
+          <div class="generate-comment-name">${c.name}</div>
+          <span class="generate-comment-time" >
+            ${new Date(c.createdAt).toLocaleString()}
+          </span>
+        </div>
 
-//   cancelBtn.addEventListener('click', () => box.remove());
+        <button class="generate-comment-reply" data-id="${c._id}" data-name="${c.name}">
+          Reply
+        </button>
+      </div>
+      <div class="generate-comment-content style="margin: 5px 0;">${c.content}</div>
 
-//   submitBtn.addEventListener('click', () => {
-//     submitComment({
-//       name: nameField.value.trim() || 'Anonymous',
-//       email: emailField.value.trim() || 'anon@example.com',
-//       content: inputField.value.trim(),
-//       parentId: commentId,
-//       website: '' // honeypot
-//     }, () => box.remove());
-//   });
+    </div>
+  `;
+}
 
-//   return box;
-// }
+function scrollToCommentTop() {
+  // scroll back to nav
+  const target = document.getElementById('sayhi-nav-comment'); 
+  
+  if (target) {
+    target.scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'start' // why start is end, end is start?
+    });
+  }
+}
 
-// /* ---------------- click reply ---------------- */
-// commentsDiv.addEventListener('click', e => {
-//   if (e.target.classList.contains('reply-btn')) {
-//     createReplyBox(e.target.dataset.id, e.target.dataset.name);
-//   }
-// });
 
-// /* ---------------- main comment submit ---------------- */
-// commentForm.addEventListener('submit', e => {
-//   e.preventDefault();
-//   const submitBtn = commentForm.querySelector('.comment-submit');
-//   submitBtn.disabled = true;
-//   submitBtn.textContent = 'Sending...';
+function updatePaginationUI() {
+  // 1. update the num
+  currentPageSpan.textContent = currentPage;
+  totalPageSpan.textContent = totalPages;
 
-//   submitComment({
-//     name: nameInput.value.trim() || 'Anonymous',
-//     email: emailInput.value.trim() || 'anon@example.com',
-//     content: textarea.value.trim(),
-//     parentId: null,
-//     website: commentForm.querySelector('input[name="website"]')?.value || ''
-//   }, () => {
-//     textarea.value = '';
-//     commentForm.classList.remove('is-active');
-//     textarea.blur();
-//   }).finally(() => {
-//     submitBtn.disabled = false;
-//     submitBtn.textContent = 'comment';
-//   });
-// });
+  // 2. "Newer" if first page, can't click
+  if (currentPage <= 1) {
+    pageNewerBtn.style.opacity = '0.5';
+    pageNewerBtn.style.pointerEvents = 'none'; //click forbidden
+  } else {
+    pageNewerBtn.style.opacity = '1';
+    pageNewerBtn.style.pointerEvents = 'auto';
+  }
 
-// /* ---------------- render comments ---------------- */
-// async function loadComments() {
-//   try {
-//     const res = await fetch('http://127.0.0.1:3000/comments');
-//     if (!res.ok) throw new Error('Failed to load comments');
-//     const comments = await res.json();
-//     commentsDiv.innerHTML = renderComments(comments);
-//   } catch (err) {
-//     console.error(err);
-//     commentsDiv.innerHTML = '<p>Failed to load comments.</p>';
-//   }
-// }
+  // 3. "Oldest"
+  if (currentPage >= totalPages) {
+    pageOlderBtn.style.opacity = '0.5';
+    pageOlderBtn.style.pointerEvents = 'none';
+  } else {
+    pageOlderBtn.style.opacity = '1';
+    pageOlderBtn.style.pointerEvents = 'auto';
+  }
+}
 
-// function renderComments(list, level = 0) {
-//   const escapeHtml = str => str.replace(/&/g,'&amp;')
-//                                .replace(/</g,'&lt;')
-//                                .replace(/>/g,'&gt;');
-//   return list.map(c => `
-//     <div class="comment" id="comment-${c._id}" style="margin-left:${level*20}px">
-//       <strong>${escapeHtml(c.name)}</strong>
-//       <span class="comment-time">(${new Date(c.createdAt).toLocaleString()})</span>
-//       <p>${escapeHtml(c.content)}</p>
-//       <button class="reply-btn" data-id="${c._id}" data-name="${escapeHtml(c.name)}">Reply</button>
-//       ${c.children && c.children.length ? renderComments(c.children, level+1) : ''}
-//     </div>
-//   `).join('');
-// }
+function resetBtn(btn, text) {
+  btn.disabled = false;
+  btn.textContent = text;
+}
