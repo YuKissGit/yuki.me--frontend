@@ -427,7 +427,7 @@ input:focus{
 .sayhi-nav-snow-icon-frame::after{
   content: "Do you like yuki?";
   position: absolute;
-  top: -40%;
+  top: -48%;
   left: 50%; 
   transform: translateX(-50%);
 
@@ -541,6 +541,7 @@ input:focus{
   background-color: var(--black-light);
   margin: 10px 0px;
   padding: 30px 60px;
+  min-height: 400px;
 }
 
 .sayhi-comments-oneComments{
