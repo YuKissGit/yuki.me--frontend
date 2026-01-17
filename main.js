@@ -534,7 +534,7 @@ function createSingleCommentHTML(c, level) {
         <div class="generate-comment-header-left">
           <div class="generate-comment-name">${c.name}</div>
           <span class="generate-comment-time" >
-            ${new Date(c.createdAt).toLocaleString()}
+            ${new Date(c.createdAt).toLocaleDateString()}
           </span>
         </div>
 
