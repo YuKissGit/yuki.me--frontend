@@ -910,4 +910,11 @@ input:focus{
     width: 90%;
     margin: 0 20px;
   }
+
+  .generate-comment-time {
+    font-size: 0.3em;
+  }
+  .generate-comment-content {
+    font-size: 0.7em;
+  }
 }
