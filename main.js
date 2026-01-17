@@ -28,7 +28,7 @@ let snowTimer = null;
 let isCoolingDown = false;
 
 //1. get current num from DB
-fetch('https://yuki-me-backend.onrender.com/snow-clicks')
+fetch('https://yuki-me-backend.onrender.com/api/snow-clicks')
 //fetch('http://127.0.0.1:3000/api/snow-clicks')
   .then(r => r.json())
   .then(data => {
@@ -654,8 +654,8 @@ function updateDisplay(num) {
 }
 
 function sendClicksToServer(countToAdd) {
-  fetch('https://yuki-me-backend.onrender.com/snow-clicks', {
-  //fetch('http://127.0.0.1:3000/snow-clicks', {
+  fetch('https://yuki-me-backend.onrender.com/api/snow-clicks', {
+  //fetch('http://127.0.0.1:3000/api/snow-clicks', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ incrementBy: countToAdd }) 
