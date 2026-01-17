@@ -18,7 +18,9 @@
 svg{
   display: block;
 }
-
+*{
+  box-sizing: border-box;
+}
 html,body {
   margin: 0;
   padding: 0;
@@ -26,6 +28,7 @@ html,body {
   font-family: var(--text-content);
   background-color: var(--light-pink);
 }
+
 header {
   position: fixed; 
   top: 0; 
@@ -246,6 +249,7 @@ footer {
   align-items: center;
   padding-left: 10%;
   padding-right: 10%;
+  box-sizing: border-box;
 }
 
 
@@ -256,6 +260,7 @@ footer {
   display: flex;
   flex-direction: column;
   gap: 30px;
+
 }
 
 .blogs-blog{
@@ -276,23 +281,15 @@ footer {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
-/* 1. 给正文内容的容器添加样式 */
 .blog-content-wrapper {
-  /* 核心代码：限制显示行数 */
   display: -webkit-box;
-  -webkit-line-clamp: 1; /* 这里设置 1 就是只显示一行，你可以改成 3 显示三行 */
+  -webkit-line-clamp: 1; /* 1 for one line */
   -webkit-box-orient: vertical;
   overflow: hidden; 
-  text-overflow: ellipsis; /* 加上省略号 ... */
-  
-  /*为了美观，稍微加上一点过渡动画（可选）*/
-  /* transition: max-height 0.3s ease;
-  cursor: pointer; 鼠标放上去变小手，提示可点击 */
+  text-overflow: ellipsis; /* add ... */
 }
 
-/* 2. 当添加了 'expanded' 这个类名时的样式 */
 .blog-content-wrapper.expanded {
-  /* 取消行数限制，显示全部内容 */
   -webkit-line-clamp: unset; 
   display: block; 
   overflow: visible;
@@ -411,7 +408,6 @@ input:focus{
 }
 .sayhi-nav-snow{
   display: flex;
-  flex-direction: column;
   align-self: center;
   gap:5px;
 }
@@ -430,12 +426,13 @@ input:focus{
 .sayhi-nav-snow-icon-frame::after{
   content: "Do you like yuki?";
   position: absolute;
-  right: 180%;
-  bottom:  1%;
+  top: -40%;
+  left: 50%; 
+  transform: translateX(-50%);
 
   padding: 0px 8px;
   border-radius: 5px;
-  font-size: 20px;
+  font-size: 15px;
   white-space: nowrap;
   font-family: var(--text-note);
   opacity: 0;
@@ -462,10 +459,11 @@ input:focus{
 .comment-box{
   padding: 15px;
   width: 100%;
-  height: 18px;
+  height: 45px;
   border-radius: var(--round10);
   margin-bottom: 10px;
   font-family: var(--text-content);
+
 }
 
 .comment-buttons{
@@ -495,29 +493,6 @@ input:focus{
 #sayhi-nav-comment.is-active .comment-buttons {
   display: block;
 }
-
-
-
-/* .sayhi-nav-comment-box:focus-within{
-  outline: 2px solid var(--black);
-  height: 100px;
-} */
-
-/* #sayhi-nav-comment:focus-within{
-  height: 200px;
-}
-.sayhi-nav-comment-box:focus{
-  outline: 2px solid var(--black);
-  height: 100px;
-} */
-/* #sayhi-nav-comment:focus-within .comment-buttons{
-  display: block;
-} */
-
-
-
-
-
 
 .comment-submit{
   display: flex;
@@ -632,10 +607,7 @@ input:focus{
   margin-left: 40px;
 }
 
-
-
-
-
+/*--------page-------*/
 .page {
   display: flex;
   justify-content: center;
@@ -663,7 +635,7 @@ input:focus{
   color:var(--black-middle);
 }
 
-
+/*--------reply-------*/
 .reply-form{
   padding-left: 10%;
   padding-right: 10%;
@@ -759,7 +731,6 @@ input:focus{
   word-break: break-word;
   white-space: pre-wrap;       
   max-width: 100%;             
-  box-sizing: border-box;
 }
 
 
@@ -823,7 +794,7 @@ input:focus{
 }
 
 
-/*Mobile / Tablet Responsive Styles*/
+/*=======Mobile / Tablet Responsive Styles=======*/
 @media screen and (max-width: 768px) {
 
   header {
@@ -838,10 +809,7 @@ input:focus{
   }
 
   main {
-    padding-top: 80px;
-    padding-left: 15px;
-    padding-right: 15px;
-    padding-bottom: 50px;
+    padding:100px 5%;
     max-width: 100%;
   }
 
@@ -915,9 +883,14 @@ input:focus{
   }
 
   /* SayHi*/
+ .comment-box{
+    height: 80px;
+  }
+
   .sayhi-nav {
     padding: 0 10px;
   }
+
   .sayhi-nav-images {
     justify-content: center;
     gap: 20px;
