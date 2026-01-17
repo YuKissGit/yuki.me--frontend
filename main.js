@@ -20,45 +20,60 @@ tabs.forEach(tab => {
 
 
 //=======================sayhi tab--- snow============================
-const btn = document.getElementById('sayhi-nav-snow-icon');
+const snowBtn = document.getElementById('sayhi-nav-snow-icon');
 const snowArea = document.getElementById('sayhi');
+const snowNumDisplay = document.querySelector('.sayhi-nav-snow-num');
 
 let snowTimer = null;
+let isCoolingDown = false;
 
-btn.addEventListener('click', () => {
-  if (snowTimer) return;//if snowing won't trigger again
+//1. get current num from DB
+fetch('https://yuki-me-backend.onrender.com/snow-clicks')
+//fetch('http://127.0.0.1:3000/api/snow-clicks')
+  .then(r => r.json())
+  .then(data => {
+    updateDisplay(data.count);
+  })
+  .catch(err => console.error("failed load snow num ", err));
 
-  snowTimer = setInterval(() => {
-    createSnow();
-  }, 150); // one snowflake every 150ms //avoid multiple clicks
+// 2. configure tb event
+snowBtn.addEventListener('click', () => {
+  if (isCoolingDown) {
+    console.log("snow btn cooling down...");
+    return; 
+  }
+
+  // 2. set status, change btn style
+  isCoolingDown = true;
+
+  snowBtn.style.opacity = '0.5';
+  snowBtn.style.cursor = 'not-allowed';
+
+  // 3. send num to backend
+  let currentVal = parseInt(snowNumDisplay.textContent) || 0;
+  updateDisplay(currentVal + 1);
+  sendClicksToServer(1);
+
+  // 4. start snow
+  if (!snowTimer) {//if snowing won't trigger again
+    snowTimer = setInterval(() => {
+      createSnow();
+    }, 150); // one snowflake every 150ms //avoid multiple clicks
 
     setTimeout(() => {
-    clearInterval(snowTimer);
-    snowTimer = null;
-  }, 30000);// one snowflake last
+      clearInterval(snowTimer);
+      snowTimer = null;
+    }, 10000);// one snowflake last
+  }
 
-});
-
-function createSnow() {
-  const snow = document.createElement('div');
-  snow.className = 'snow';
-
-  snow.style.left = Math.random() * 80 + 'vw';// num for position
-  snow.style.animationDuration = 10 + Math.random() * 10 + 's';//for speed
-
-  const size = 4+Math.random()*11;//for generating random snow size
-  //snow is square
-  snow.style.width = size +'px';
-  snow.style.height = size +'px';
-
-  snowArea.appendChild(snow);
-
- //delete snow div after certain minutes,otherwise exist forever
+  // 6. unlock btn
   setTimeout(() => {
-    snow.remove();
-  }, 15000);//when delete the snow flower div
-}
-
+    isCoolingDown = false;
+    snowBtn.style.opacity = '1';
+    snowBtn.style.cursor = 'pointer';
+    
+  }, 5000); //time to unlock btn
+});
 
 // ==================blog-----auto fetch from blogs.json=====================
 const container = document.querySelector('.tab-content-blogs'); 
@@ -208,7 +223,8 @@ commentForm.addEventListener('submit', async (e) => {
   }
 
   try {
-    const res = await fetch('http://127.0.0.1:3000/comments', { 
+    const res = await fetch('https://yuki-me-backend.onrender.com/comments', { 
+    // const res = await fetch('http://127.0.0.1:3000/comments', { 
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -258,58 +274,64 @@ commentsArea.addEventListener('click', e => {//keep only one reply box open, so 
   }
 
   //reply event----------------------------------
-  
-  /* 
-  if (e.target.classList.contains('generate-comment-reply')) {
-      const parentId = e.target.dataset.id;
-      const parentName = e.target.dataset.name; // get reply-to name
-      const parentDiv = e.target.closest('.generate-comment'); //parent may have parent, so closet parent
-  */
-
   const replyBtn = e.target.closest('.generate-comment-reply');
   if (replyBtn) {
-    const parentId = replyBtn.dataset.id; // use replyBtn not e.target
+    const parentId = replyBtn.dataset.id;
     const parentName = replyBtn.dataset.name;
-    const parentDiv = replyBtn.closest('.generate-comment');
 
-    //keep only one reply form open
-    if (activeReplyForm) {
-      activeReplyForm.remove();
-    }
+    // 1. remove exist modal (Keyboard Navigation) //keep only one reply form open
+    const existingOverlay = document.querySelector('.reply-modal-overlay');
+    if (existingOverlay) existingOverlay.remove();
 
+    // 2. create HTML
     const replyHtml = `
-      <form class="reply-form">
+      <div class="reply-modal-overlay"> 
+        <div class="reply-modal-content">
 
-        <textarea class="comment-box" name="content" 
-                  placeholder="replying to @${parentName} " 
-                  required ></textarea>
+          <div class="reply-modal-title">Replying to @${parentName}</div>
 
-        <div class="comment-button-required">
-          *<input class="comment-button-required-input" type="text" name="name" placeholder="Your name" required>
-          *<input class="comment-button-required-input" type="email" name="email" placeholder="Your email" required>
+          <form class="reply-form">
+            <textarea class="comment-box" name="content" placeholder="Post reply ..." required></textarea>
+            <div class="comment-button-required">
+              *<input class="comment-button-required-input" type="text" name="name" placeholder="Your name" required>
+              *<input class="comment-button-required-input" type="email" name="email" placeholder="Your email" required>
+            </div>
+
+            <div class="reply-form-buttons">
+              <button class="reply-form-buttons-cancel comment-submit" type="button">Cancel</button>
+              <button class="reply-form-buttons-submit comment-submit" type="submit">Reply</button>
+            </div>
+          </form>
+
         </div>
-
-        <div class="reply-form-buttons">
-          <button class="reply-form-buttons-cancel comment-submit" type="button">Cancel</button>
-          <button class="reply-form-buttons-submit comment-submit" type="submit">Reply</button>
-        </div>
-      </form>
+      </div>
     `;
 
-    // replyBtn.insertAdjacentHTML('afterend', replyHtml);
-    parentDiv.insertAdjacentHTML('beforeend', replyHtml);
-    activeReplyForm = parentDiv.querySelector('.reply-form');
+    // 3. insert to target area
+    document.body.insertAdjacentHTML('beforeend', replyHtml);
     
-    //pass parentName to merge to reply content
-    handleReplySubmit(activeReplyForm, parentId, parentName);
-  }
+    
+    // 4. get cancel button and configure event
+    const overlay = document.body.lastElementChild;
+    const form = overlay.querySelector('.reply-form');
 
-  // if cancel clicked
-  if (e.target.classList.contains('reply-form-buttons-cancel')) {
-    if (activeReplyForm) {
-      activeReplyForm.remove();
-      activeReplyForm = null;//to keep only one reply form display
-    }
+    const cancelBtn = overlay.querySelector('.reply-form-buttons-cancel');
+    cancelBtn.addEventListener('click', () => {
+        overlay.remove(); 
+        activeReplyForm = null;
+    });
+
+    // 5. click other area, close modal
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        overlay.remove();
+        activeReplyForm = null;
+      }
+    });
+
+    // 6. submit event
+    activeReplyForm = form;
+    handleReplySubmit(form, parentId, parentName);//pass parentName to merge to reply content
   }
 
 });
@@ -329,7 +351,8 @@ async function loadComments(page = 1) {
     activeReplyForm = null; //reset reply form state
 
     //limit 15 comments(root) per page
-    const res = await fetch(`http://127.0.0.1:3000/comments?page=${page}&limit=15`);
+    const res = await fetch(`https://yuki-me-backend.onrender.com/comments?page=${page}&limit=15`);
+    //const res = await fetch(`http://127.0.0.1:3000/comments?page=${page}&limit=15`);
 
     if (!res.ok) throw new Error('Failed to load comments');
     
@@ -373,19 +396,17 @@ loadComments(1);
 
 
 
-
 //========================Helper functions===================
 
 //reply submit---------------------------------------
-function handleReplySubmit(form, parentId, parentName) {
+ function handleReplySubmit(form, parentId, parentName) {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const submitBtn = form.querySelector('.reply-form-buttons-submit');
-    
     const rawContent = form.querySelector('textarea').value;
-    const finalContent = `@${parentName} ${rawContent}`;
-    
-      // Debounce - Prevent duplicate submission
+    const finalContent = `@${parentName}: ${rawContent}`;
+
+    // Debounce - Prevent duplicate submission
     if(submitBtn.disabled) return;
     submitBtn.disabled = true;
     submitBtn.textContent = 'Sending...';
@@ -401,33 +422,36 @@ function handleReplySubmit(form, parentId, parentName) {
     }
 
     try {
-      const res = await fetch('http://127.0.0.1:3000/comments', {
+      const res = await fetch('https://yuki-me-backend.onrender.com/comments', {
+      //const res = await fetch('http://127.0.0.1:3000/comments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: data.name, 
           email: data.email,
-          content: finalContent, //parentName added
+          content: finalContent,//parentName added
           parentId: parentId
         })
       });
 
       if (!res.ok) throw new Error('Reply failed');
 
-      form.remove();
+      const overlay = form.closest('.reply-modal-overlay');
+      if (overlay) overlay.remove();
+      
       activeReplyForm = null;
       await loadComments();
 
     } catch (err) {
       alert('Failed to reply.');
       console.error(err);
+      //resetBtn(submitBtn, 'Reply');
     }finally {
-    resetBtn(submitBtn, 'Reply');
+      if (overlay) overlay.remove();
     }
 
   });
-
-} 
+}
 
 
 // Render Logic--------------------------------
@@ -494,11 +518,17 @@ function renderFullTree(list, level) {
 // build single comment itself HTML without children
 function createSingleCommentHTML(c, level) {
   // Flat：Level 0 no indent，Level > 0  20px indent each level
-  const marginLeft = level * 30; 
+  const marginLeft = level * 35; 
+  const initial = c.name.charAt(0);
+  const bgColor = getAvatarColor(c.name);
 
   return `
-    <div class="generate-comment" style="margin-left:${marginLeft}px; border-left: ${level > 0 ? '1px solid #eee' : 'none'};">
+    <div class="generate-comment" style="margin-left:${marginLeft}px;">
       <div class="generate-comment-header">
+        <div class="avatar-initial" style="background-color: ${bgColor};">
+          ${initial}
+        </div>
+
         <div class="generate-comment-header-left">
           <div class="generate-comment-name">${c.name}</div>
           <span class="generate-comment-time" >
@@ -510,7 +540,7 @@ function createSingleCommentHTML(c, level) {
           <svg width=30 height=20 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M6.4 3.80353C7.55322 2.26658 10 3.08182 10 5.00302V8.00928C14.6772 7.86093 17.7771 9.50672 19.7796 11.7657C21.8614 14.1142 22.6633 17.0184 22.9781 18.9028C23.116 19.7283 22.5806 20.3237 22.0149 20.5275C21.4711 20.7234 20.7467 20.6283 20.2749 20.0531C18.6945 18.1261 15.5 15.4884 10 15.4884V18.997C10 20.9182 7.55321 21.7334 6.4 20.1965L1.6 13.7992C0.800001 12.733 0.800001 11.267 1.6 10.2008L6.4 3.80353ZM8 5.00302L3.2 11.4003C2.93333 11.7557 2.93333 12.2443 3.2 12.5997L8 18.997V14.5C8 13.9477 8.44772 13.5 9 13.5H10C17 13.5 20.6009 17.4621 20.6009 17.4621C20.1828 16.0361 19.4749 14.4371 18.2829 13.0924C16.7183 11.3273 14.5 10 10 10H9C8.44772 10 8 9.55228 8 9V5.00302Z" ></path> </g></svg>
         </div>
       </div>
-      <div class="generate-comment-content style="margin: 5px 0;">${c.content}</div>
+      <div class="generate-comment-content" >${c.content}</div>
 
     </div>
   `;
@@ -556,4 +586,78 @@ function updatePaginationUI() {
 function resetBtn(btn, text) {
   btn.disabled = false;
   btn.textContent = text;
+}
+
+function getAvatarColor(name) {
+  const colors = [
+    '#a4c1f8',
+    '#c0afff',
+    '#a5c2f8',
+    '#9be5f4',
+    '#cbf3eb',
+    '#cfefd7',
+    '#d9f5d1',
+    '#d8f7af',
+    '#fadaac',
+    '#f4f3b7',
+    '#c0dbf2',
+
+    '#fbe5aa',
+    '#edf49f',
+    '#a4d2f8',
+    '#b4effa',
+    '#aef9e9',
+    '#b5f7c2',
+    '#f2f7b5',
+    '#e5f4d1',
+    '#f6d3be',
+    '#fab2a5',
+  ];
+  
+  let hash = 0;
+  if (!name) return colors[0];
+
+  //sum up all chars in name to prevent common first letters
+  for (let i = 0; i < name.length; i++) {
+    hash = hash*31 + name.charCodeAt(i);  //31 is Odd Prime  // and for bit shift (i << 5) - i
+  }
+  return colors[hash % colors.length];
+}
+
+
+//snow------------------------------
+function createSnow() {
+  const snow = document.createElement('div');
+  snow.className = 'snow';
+
+  snow.style.left = Math.random() * 80 + 'vw';// num for position
+  snow.style.animationDuration = 5 + Math.random() * 5 + 's';//for speed
+
+  const size = 4+Math.random()*11;//for generating random snow size
+  //snow is square
+  snow.style.width = size +'px';
+  snow.style.height = size +'px';
+
+  snowArea.appendChild(snow);
+
+ //delete snow div after certain minutes,otherwise exist forever
+  setTimeout(() => {
+    snow.remove();
+  }, 10000);//when delete the snow flower div
+}
+
+//??--------
+function updateDisplay(num) {
+  if(snowNumDisplay) {
+      snowNumDisplay.textContent = num.toString().padStart(3, '0');
+  }
+}
+
+function sendClicksToServer(countToAdd) {
+  fetch('https://yuki-me-backend.onrender.com/snow-clicks', {
+  //fetch('http://127.0.0.1:3000/snow-clicks', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ incrementBy: countToAdd }) 
+  }).catch(err => console.error("failed to update snow num:", err));
 }
