@@ -130,6 +130,8 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center; 
+    position: relative;
+    z-index: 1;
 }
 
 .sidebar-content{
@@ -138,6 +140,7 @@ footer {
   border: 2px solid var(--cream);
   box-shadow: 6px 6px 0 var(--black); 
   border-radius: var(--round10);
+  position: relative;
 }
 
 .sidebar-content-text{
@@ -149,12 +152,16 @@ footer {
   word-wrap: break-word; /* change line */
   color:var(--black);
   font-family: var(--text-content);
+  margin-top: -35px;
+  position: relative;
+  z-index:2;
 }
 
 .sidebar-link-icons {
   display: flex;
   justify-content: space-between;
   padding: 0px 50px;
+  gap: 30px;
   margin: 15px 0px;/*if add more icons , change here*/
 }
 .sidebar-link-icon{
@@ -167,7 +174,7 @@ footer {
 
 /********** main - right - projects ***********/
 .main-right-projects{
-  border-radius: var(--round10);
+  /* border-radius: var(--round10); */
   display: flex;
   flex-direction: column;
   gap: 50px;
@@ -177,9 +184,10 @@ footer {
 
 .project { 
   width: 500px;
-  border-radius: var(--round10); 
+  border-radius: 0px 0px 10px 10px; 
   background-color: var(--black-light);
   border: 1px solid var(--black-light);
+
 
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 } 
@@ -196,7 +204,6 @@ footer {
   width: 500px;
   height: 281px;
   object-fit: cover;
-  border-radius: 10px 10px 0px 0px;
 }
 
 .project-left-text{
@@ -692,7 +699,7 @@ input:focus{
   display: flex;
   justify-content: center;
 }
-.replies-showmore{ /*show more feature*/
+.replies-showmore{
   all: unset;
   cursor: pointer;
   color: var(--black-middle);
@@ -736,7 +743,7 @@ input:focus{
   cursor: pointer;
   font-size: 0.8em;
   border-radius: 5px;
-  padding: 2px 10px;
+  padding: 2px 10px; /*for click area*/
   fill : var(--black-text);
   /* border: 1px solid var(--grey); */
 }
@@ -813,4 +820,122 @@ input:focus{
   min-height: 100px;
   width: 100%;
   box-sizing: border-box;
+}
+
+
+/*Mobile / Tablet Responsive Styles*/
+@media screen and (max-width: 768px) {
+
+  header {
+    padding: 10px 20px; 
+  }
+  .navbar {
+    flex-direction: row;
+  }
+  .navbar-right {
+    gap: 15px; 
+    font-size: 0.9em;
+  }
+
+  main {
+    padding-top: 80px;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-bottom: 50px;
+    max-width: 100%;
+  }
+
+  .tab-content.tab-projects {
+    flex-direction: column; /*horizontal*/
+    gap: 30px;
+  }
+
+  /* Profile) remove fixed position*/
+  .main-left-sidebar {
+    position: relative; 
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* hide blank div */
+  #sidebar-left-blank {
+    display: none;
+  }
+
+  .sidebar-image {
+    margin-bottom: -40px;
+  }
+  .sidebar-image img {
+    width: 180px;
+    height: auto;
+  }
+  .sidebar-content {
+    width: 90%;
+    padding-top: 50px;
+    box-sizing: border-box;
+  }
+
+  .main-right-projects {
+    padding: 0;
+    gap: 30px;
+    width: 100%;
+  }
+
+  .project {
+    width: 100%;
+    max-width: 100%;
+  }
+  .project-left-images {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .project-left-image {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  /* Blogs*/
+  .tab-content.tab-blogs {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  
+  .tab-content-blogs {
+    padding: 10px;
+  }
+
+  .blogs-blog {
+    padding: 15px;
+  }
+
+  /* SayHi*/
+  .sayhi-nav {
+    padding: 0 10px;
+  }
+  .sayhi-nav-images {
+    justify-content: center;
+    gap: 20px;
+  }
+  .sayhi-nav-images-girl {
+    height: 60px;
+  }
+  #sayhi-comments {
+    padding: 20px 15px;
+  }
+  .sayhi-comments-oneComments-content {
+    margin: 0 10px;
+  }
+  .sayhi-comments-oneComments-otherComment {
+    margin-left: 15px;
+  }
+  .reply-modal-content {
+    width: 90%;
+    margin: 0 20px;
+  }
 }
