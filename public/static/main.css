@@ -95,8 +95,8 @@ main{
 
 @media(min-width:1440px){
   main{
-    padding-left: 20%;
-    padding-right: 20%;
+    padding-left: 25%;
+    padding-right: 25%;
     max-width: 100%;
   }
 }
@@ -542,7 +542,7 @@ input:focus{
   background-color: var(--black-light);
   margin: 10px 0px;
   padding: 30px 60px;
-  min-height: 400px;
+  min-height: 600px;
 }
 
 .sayhi-comments-oneComments{
