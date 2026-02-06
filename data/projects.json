@@ -16,6 +16,14 @@
         "website":"https://yukime.vercel.app/",
         "github":"https://github.com/YuKissGit/yuki.me--backend",
         "image":"./public/static/image/p2-backend.png"
+    },
+    {
+        "id":3,
+        "title":"Transaction processor",
+        "labels":["COBOL"],
+        "youtube":"https://www.youtube.com/",
+        "github":"https://github.com/YuKissGit/banking-transaction-processor---COBOL",
+        "image":"./public/static/image/p3-cobol.png"
     }
 
 ]

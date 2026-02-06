@@ -94,37 +94,7 @@ fetch('./data/blogs.json')
                   <div class="blogs-blog-date">${post.date}</div>`;
 
       //2. class="blog-content-wrapper" to add wrap effect when click
-      html += `<div class="blog-content-wrapper">`;
-
-      post.content.forEach(item => {
-        if (typeof item === "string") html += `<div class="blogs-blog-article">${item}</div>`;
-        else switch(item.type) {
-          case "list":
-            html += "<ul>";
-            item.items.forEach(li => html += `<li>${li}</li>`);
-            html += "</ul>";
-            break;
-          case "heading":
-            html += `<h${item.level}>${item.text}</h${item.level}>`;
-            break;
-          case "image":
-            html += `<img src="${item.src}" alt="${item.alt}" style="max-width:100%"/>`;
-            break;
-          case "code": 
-             html += `<pre><code>${item.content}</code></pre>`;
-             break;
-          case "hr":
-             html += `<hr/>`;
-             break;
-          case "link":
-             html += `<a href="${item.href}">${item.text}</a>`;
-             break;
-        }
-      });
-
-      // 3 close div
-      html += `</div>`; 
-
+      html += `<div class="blog-content-wrapper"></div>`;
       //add static html code to div 
       blogDiv.innerHTML = html;
 
@@ -137,6 +107,21 @@ fetch('./data/blogs.json')
       });
 
       container.appendChild(blogDiv);
+
+      fetch(post.file)
+        .then(res => {
+          if (!res.ok) throw new Error('Failed to load Markdown');
+          return res.text();
+        })
+        .then(mdContent => {
+          const contentWrapper = blogDiv.querySelector('.blog-content-wrapper');
+          contentWrapper.innerHTML = marked.parse(mdContent);
+        })
+        .catch(err => {
+          const contentWrapper = blogDiv.querySelector('.blog-content-wrapper');
+          contentWrapper.innerHTML = `<p style="color:red;">Error loading Markdown: ${err.message}</p>`;
+        });
+
     });
   })
   .catch(err => console.error("Error loading blogs:", err));
